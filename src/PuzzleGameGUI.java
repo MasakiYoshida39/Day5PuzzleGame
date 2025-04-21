@@ -143,23 +143,44 @@ public class PuzzleGameGUI {
         }
     }
 
-    // ヒントを表示するメソッド
+ // 🧠 改良されたヒントメソッド：一番ゴールに近づく動きを提示
     private void showHint() {
-        StringBuilder hintMessage = new StringBuilder("動かせるタイル: ");
-        boolean found = false;
+        int bestMoveIndex = -1;
+        int minHeuristic = Integer.MAX_VALUE;
+
         for (int i = 0; i < 16; i++) {
             if (isAdjacent(i, emptyIndex)) {
-                hintMessage.append(tiles.get(i)).append(" ");
-                found = true;
+                Collections.swap(tiles, i, emptyIndex);
+                int heuristic = calculateManhattanDistance();
+                if (heuristic < minHeuristic) {
+                    minHeuristic = heuristic;
+                    bestMoveIndex = i;
+                }
+                Collections.swap(tiles, i, emptyIndex);
             }
         }
-        if (found) {
-            JOptionPane.showMessageDialog(frame, hintMessage.toString());
+
+        if (bestMoveIndex != -1) {
+            JOptionPane.showMessageDialog(frame, "次に動かすと良いタイルは: " + tiles.get(bestMoveIndex));
         } else {
-            JOptionPane.showMessageDialog(frame, "動かせるタイルはありません。");
+            JOptionPane.showMessageDialog(frame, "動かせるタイルがありません。");
         }
     }
 
+    // マンハッタン距離で「解答にどれだけ近いか」を評価
+    private int calculateManhattanDistance() {
+        int distance = 0;
+        for (int i = 0; i < 16; i++) {
+            int value = tiles.get(i);
+            if (value == 0) continue;
+            int targetRow = (value - 1) / 4;
+            int targetCol = (value - 1) % 4;
+            int currentRow = i / 4;
+            int currentCol = i % 4;
+            distance += Math.abs(currentRow - targetRow) + Math.abs(currentCol - targetCol);
+        }
+        return distance;
+    }
 
     // 答え合わせを行うメソッド
     private void checkAnswer() {
