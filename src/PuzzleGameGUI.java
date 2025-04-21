@@ -145,15 +145,21 @@ public class PuzzleGameGUI {
 
     // ヒントを表示するメソッド
     private void showHint() {
-        // 解法のヒントとして隣接するタイルを表示
+        StringBuilder hintMessage = new StringBuilder("動かせるタイル: ");
+        boolean found = false;
         for (int i = 0; i < 16; i++) {
             if (isAdjacent(i, emptyIndex)) {
-                // ヒントとして最初に動かすべきタイルを表示
-                JOptionPane.showMessageDialog(frame, "動かすべきタイル: " + tiles.get(i));
-                break;
+                hintMessage.append(tiles.get(i)).append(" ");
+                found = true;
             }
         }
+        if (found) {
+            JOptionPane.showMessageDialog(frame, hintMessage.toString());
+        } else {
+            JOptionPane.showMessageDialog(frame, "動かせるタイルはありません。");
+        }
     }
+
 
     // 答え合わせを行うメソッド
     private void checkAnswer() {
